@@ -28,7 +28,7 @@ BenchmarkGzippedGRPCProtobuf-8              5190            228779 ns/op        
 BenchmarkHTTPJSON-8                        10000            107691 ns/op            8757 B/op        115 allocs/op
 
 PASS
-ok      benchmark-grpc-protobuf-vs-http-json  7.370s
+ok      benchmark-grpc-protobuf  7.370s
 ```
 
 They are almost the same (gRPC and HTTP+JSON).
@@ -36,7 +36,7 @@ gZipped gRPC request is slower.
 
 ### CPU usage comparison
 
-This will create an executable `benchmark-grpc-protobuf-vs-http-json.test` and the profile information will be stored in `grpcprotobuf.cpu` (+gzipped) and `httpjson.cpu`:
+This will create an executable `benchmark-grpc-protobuf.test` and the profile information will be stored in `grpcprotobuf.cpu` (+gzipped) and `httpjson.cpu`:
 
 ```
 go test -bench=BenchmarkGRPCProtobuf -cpuprofile=grpcprotobuf.cpu
