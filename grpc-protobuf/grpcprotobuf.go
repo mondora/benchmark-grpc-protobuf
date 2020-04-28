@@ -1,14 +1,14 @@
 package grpcprotobuf
 
 import (
+	"benchmark-grpc-protobuf/grpc-protobuf/usertest"
 	"errors"
+	"golang.org/x/net/context"
+	"google.golang.org/grpc"
+	"io"
 	"log"
 	"net"
 	"net/mail"
-
-	"benchmark-grpc-protobuf/grpc-protobuf/usertest"
-	"golang.org/x/net/context"
-	"google.golang.org/grpc"
 )
 
 // Start entrypoint
@@ -39,6 +39,33 @@ func (s *Server) CreateUser(ctx context.Context, in *usertest.User) (*usertest.R
 		Message: "OK",
 		User:    in,
 	}, nil
+}
+
+// CreateUsers handler
+func (s *Server) CreateUsers(userStream usertest.API_CreateUsersServer) error {
+	var count uint64 = 0
+	for {
+		user, err := userStream.Recv()
+		if err == io.EOF {
+			return userStream.SendAndClose(&usertest.ResponseManyUsers{
+				Message: "OK",
+				Code:    200,
+				Count:   count,
+			})
+		}
+		if err != nil {
+			return err
+		}
+		err = validate(user)
+		if err != nil {
+			return userStream.SendAndClose(&usertest.ResponseManyUsers{
+				Code:    500,
+				Message: err.Error(),
+				Count:   count,
+			})
+		}
+		count++
+	}
 }
 
 func validate(in *usertest.User) error {
